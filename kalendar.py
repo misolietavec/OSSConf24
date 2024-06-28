@@ -14,9 +14,8 @@ def __():
 @app.cell
 def __(mo):
     # radio tlacidla pre rozsah rokov
-    rozsahy = {'1900-1949': (1900, 1949), '1950-1999': (1950, 1999),
-               '2000-2025': (2000, 2025)}
-    rozsah_rokov = mo.ui.radio(options=rozsahy, value='2000-2025', inline=True)
+    rozsahy = {"1900-1949": (1900, 1949), "1950-1999": (1950, 1999), "2000-2025": (2000, 2025)}
+    rozsah_rokov = mo.ui.radio(options=rozsahy, value="2000-2025", inline=True)
     return rozsah_rokov, rozsahy
 
 
@@ -31,21 +30,26 @@ def __(mo, rozsah_rokov):
 
 @app.cell
 def __(cal, mesiace, mo, roky):
-    posledny_den = cal.monthrange(roky.value, mesiace.value)[1] 
-    dni = mo.ui.slider(start=1, stop=cal.monthrange(roky.value, mesiace.value)[1], value=posledny_den, show_value=True, label="Dni")
-    return dni, posledny_den
+    koncovy_den = cal.monthrange(roky.value, mesiace.value)[1]
+    # posuvnik dni zavisi od posuvnikov roky, mesiace
+    dni = mo.ui.slider(start=1, stop=koncovy_den, value=koncovy_den, show_value=True, label="Dni")
+    return dni, koncovy_den
 
 
 @app.cell
 def __(cal, dni, mesiace, roky):
     week_dict = {0: "Pondelok", 1: "Utorok", 2: "Streda", 3: "Štvrtok", 4: "Piatok", 5: "Sobota", 6: "Nedeľa"}
+    # den_tyzdna zavisi od vsetkych troch posuvnikov
     den_tyzdna = week_dict[cal.weekday(roky.value, mesiace.value, dni.value)]
     return den_tyzdna, week_dict
 
 
 @app.cell
 def __(den_tyzdna, dni, mesiace, mo, roky, rozsah_rokov):
-    mo.vstack([mo.md('#Skorovečný kalendár'), rozsah_rokov, mo.hstack([roky, mesiace, dni]), mo.md(f"Deň v týždni: {den_tyzdna}")], align="center")
+    mo.vstack(
+        [mo.md("#Skorovečný kalendár"), rozsah_rokov, mo.hstack([roky, mesiace, dni]), mo.md(f"### Deň v týždni: {den_tyzdna}")],
+        align="center",
+    )
     return
 
 

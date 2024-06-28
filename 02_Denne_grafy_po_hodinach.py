@@ -19,7 +19,7 @@ def __(mo):
 
 @app.cell
 def __(pl):
-    # nacitame vycistenu frejmu, len stlpce, co pouzijeme v tomto NB
+    # nacitame frejmu, len stlpce, co pouzijeme v tomto NB
     cols = ["pick_dt", "passengers", "fare"]
     df = pl.read_parquet("data/nyc_taxi310k.parq", columns=cols)
     return cols, df
@@ -28,7 +28,7 @@ def __(pl):
 @app.cell
 def __(df, pl):
     # Potrebujeme zoskupit data podla dni a hodin; groupped sama o sebe je nam netreba
-    groupped = df.group_by(pl.col("pick_dt").dt.day().alias("pick_day"), pl.col("pick_dt").dt.hour().alias("pick_hour"))
+    groupped = df.group_by(pl.col("pick_dt").dt.day().alias("Deň"), pl.col("pick_dt").dt.hour().alias("Hodina"))
     return groupped,
 
 
@@ -36,9 +36,9 @@ def __(df, pl):
 def __(groupped, pl):
     df_days = groupped.agg(
         [
-            pl.col("passengers").sum().alias("pass_count"),
-            pl.col("fare").count().alias("fares_count"),
-            pl.col("fare").sum().alias("total_fare"),
+            pl.col("passengers").sum().alias("Cestujúci"),
+            pl.col("fare").count().alias("Jazdy"),
+            pl.col("fare").sum().alias("Zárobok"),
         ]
     )
     return df_days,
@@ -46,14 +46,14 @@ def __(groupped, pl):
 
 @app.cell
 def __(df_days):
-    df_days.sort(by=["pick_day", "pick_hour"]).head()
+    df_days.sort(by=["Deň", "Hodina"]).head()
     return
 
 
 @app.cell
 def __(df_days, pl):
     # ako vyberieme jeden den? lahko, napr. 14. jan.
-    df_days.filter(pl.col("pick_day") == 14).sort(by="pick_hour").head()
+    df_days.filter(pl.col("Deň") == 14).sort(by="Hodina").head()
     return
 
 

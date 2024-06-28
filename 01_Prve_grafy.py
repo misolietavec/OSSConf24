@@ -36,7 +36,7 @@ def __(mo, pl):
 def __(mo, pl):
     cols = ["pick_dt", "passengers", "fare"]
     df = pl.read_parquet("data/nyc_taxi310k.parq", columns=cols)
-    mo.vstack([mo.md("Vyberieme len tri stĺpce, prvých niekoľko riadkov je:"), df.head()])
+    mo.vstack([mo.md("#### Vyberieme len tri stĺpce, prvých niekoľko riadkov je:"), df.head()])
     return cols, df
 
 
@@ -45,7 +45,7 @@ def __(mo):
     mo.md(
         """
         ### Všetky dáta sú z januára 2015. Zoberme nástupy (pick).
-        ### Chceme grafy po jednotlivých dňoch. Počet pasažierov, počet jázd, zarobené peniaze.
+        ### Chceme grafy po jednotlivých dňoch. Počet pasažierov, počet jázd.
         """
     )
     return
@@ -53,25 +53,25 @@ def __(mo):
 
 @app.cell
 def __(df, pl):
-    df_days = df.group_by(pl.col("pick_dt").dt.day().alias("pick_day")).agg(pl.col("passengers").sum().alias("pass_count"))
+    df_days = df.group_by(pl.col("pick_dt").dt.day().alias("Deň")).agg(pl.col("passengers").sum().alias("Cestujúci"))
     return df_days,
 
 
 @app.cell
-def __(df_days):
-    df_days.head()
+def __(df_days, mo):
+    mo.vstack(["Prvých niekoľko riadkov z df_days:", df_days.head()])
     return
 
 
 @app.cell
 def __(mo):
-    mo.md("\n    ### Nakreslíme stĺpcový graf, na osi x budú dni (1, 2, .... 31. jan.), na osi y počty cestujúcich\n")
+    mo.md("### Nakreslíme stĺpcový graf, na osi x budú dni (1, 2, .... 31. jan.), na osi y počty cestujúcich")
     return
 
 
 @app.cell
 def __(df_days, px):
-    pass_plot = px.bar(df_days, x="pick_day", y="pass_count", labels={"pick_day": "Dni", "pass_count": "Cestujúci"})
+    pass_plot = px.bar(df_days, x="Deň", y="Cestujúci")
     pass_plot.update_layout(xaxis=dict(tickmode="array", tickvals=list(range(1, 32))))
     return pass_plot,
 
@@ -82,7 +82,7 @@ def __(mo):
         """
         ## Čo za katastrófa sa stala 27. januára? Strašný pokles oproti iným dňom.
         ### Vidíme nejakú (približnú) periodicitu v dátach?
-        ### Podobné grafy by sme chceli pre počty jázd a pre denné zárobky.\n
+        ### Podobné grafy by sme chceli pre počty jázd.
         """
     )
     return
@@ -91,16 +91,16 @@ def __(mo):
 @app.cell
 def __(df, pl):
     df_days_numfares = (
-        df.group_by(pl.col("pick_dt").dt.day().alias("pick_day"))
-        .agg(pass_count=pl.col("passengers").sum(), day_fares=pl.col("fare").sum(), fares_count=pl.col("fare").count())
-        .sort(by="pick_day")
+        df.group_by(pl.col("pick_dt").dt.day().alias("Deň"))
+        .agg(Cestujúci=pl.col("passengers").sum(), Zárobok=pl.col("fare").sum(), Jazdy=pl.col("fare").count())
+        .sort(by="Deň")
     )
     return df_days_numfares,
 
 
 @app.cell
-def __(df_days_numfares):
-    df_days_numfares.head()
+def __(df_days_numfares, mo):
+    mo.vstack(["Datafrejma po dňoch", df_days_numfares.head()])
     return
 
 
@@ -108,10 +108,10 @@ def __(df_days_numfares):
 def __(df_days_numfares, px):
     pass_fares_plot = px.bar(
         df_days_numfares,
-        x="pick_day",
-        y=["pass_count", "fares_count"],
+        x="Deň",
+        y=["Cestujúci", "Jazdy"],
         barmode="group",
-        labels={"pick_day": "Dni", "value": "Počet cestujúcich a jázd"},
+        labels={"value": "Počet cestujúcich a jázd"},
     )
     pass_fares_plot.update_layout(xaxis=dict(tickmode="array", tickvals=list(range(1, 32))))
     return pass_fares_plot,
@@ -165,12 +165,6 @@ def __(df, pl, px):
 
 @app.cell
 def __(monthly_plot):
-    monthly_plot("Podľa dní")
-    return
-
-
-@app.cell
-def __(monthly_plot):
     monthly_plot("Podľa hodín")
     return
 
@@ -195,12 +189,13 @@ def __():
     from datetime import date
 
     print(date(2015, 1, 1).weekday())  # 0 - pondelok, ..., 6 - nedeľa
+    # ale v polars dt.weekday je 1 - pondelok, ..., 7 - nedeľa
     return date,
 
 
 @app.cell
 def __(df_weekday, np, pl):
-    pocty = np.array([4, 4, 4, 5, 5, 5, 4])
+    pocty = np.array([4, 4, 4, 5, 5, 5, 4])  # preco?
     df_weekday_mean = df_weekday.with_columns(pl.col("pass_count") / pocty)
     df_weekday_mean
     return df_weekday_mean, pocty

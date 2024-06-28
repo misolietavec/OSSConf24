@@ -41,7 +41,8 @@ def __(df, pl):
 @app.cell
 def __(df_pickdrop, pl):
     # vyberieme data pre nejaky den a hodinu, napr. 14. jan o 8-mej
-    df_pickdh = df_pickdrop.filter((pl.col("pick_dt").dt.day() == 14) & (pl.col("pick_dt").dt.hour() == 8))
+    df_pickdh = df_pickdrop.filter((pl.col("pick_dt").dt.day() == 14) & 
+                                   (pl.col("pick_dt").dt.hour() == 8))
     return df_pickdh,
 
 

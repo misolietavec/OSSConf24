@@ -12,7 +12,7 @@ def __():
 
 @app.cell
 def _():
-    from final.data_funkcie import pick_plot, drop_plot, view_month_week, week_plot, daily_plot, histo_dists, histo_times
+    from final.data_funkcie import pick_plot, drop_plot, view_month_week, daily_plot, histo_dists, histo_times
     return (
         daily_plot,
         drop_plot,
@@ -20,13 +20,12 @@ def _():
         histo_times,
         pick_plot,
         view_month_week,
-        week_plot,
     )
 
 
 @app.cell
 def _(mo):
-    # widgety, graficke prvky
+    # widgety (graficke prvky)
     day_choose = mo.ui.slider(start=1, stop=31, value=14, label="Deň", debounce=True, show_value=True)
     hour_choose = mo.ui.slider(start=0, stop=23, value=11, label="Hodina", debounce=True, show_value=True)
     direction = mo.ui.radio(options=["Nástup", "Výstup"], value="Nástup", inline=True)
@@ -34,7 +33,7 @@ def _(mo):
     day_hour_choose = mo.ui.radio(options=["Podľa dní", "Podľa hodín", "Dni v týždni (nástupy)"], value="Podľa dní", inline=True)
     # pre histogramy
     nbins_choose = mo.ui.slider(start=10, stop=120, value=20, label="Počet tried", debounce=True, show_value=True)
-    # percentily pre histogramy, nove
+    # percentily pre histogramy
     quant_choose = mo.ui.slider(start=5, stop=95, step=5, value=50, label="Percentil", debounce=True, show_value=True)
     return (
         day_choose,

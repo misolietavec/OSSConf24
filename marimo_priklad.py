@@ -28,6 +28,12 @@ def __(x):
 
 @app.cell
 def __(mo):
+    mo.md("### Čo sa stane, ak vymeníme poradie povyšších dvoch buniek?")
+    return
+
+
+@app.cell
+def __(mo):
     mesiace = mo.ui.slider(start=1, stop=12, show_value=True, label="Mesiace")
     mesiace
     return mesiace,

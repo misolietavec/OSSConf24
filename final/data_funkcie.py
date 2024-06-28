@@ -6,7 +6,7 @@ import numpy as np
 df = pl.read_parquet('data/nyc_taxi310k.parq')
 
 
-def monthly_frame(frm, day=True):      # nazvy stplcov v datafrejme mozu byt aj po slovensky :-)
+def monthly_frame(frm, day=True):      # nazvy stlpcov v datafrejme mozu byt aj po slovensky :-)
     groupped = frm.group_by(pl.col('pick_dt').dt.day()) if day else\
                frm.group_by(pl.col('pick_dt').dt.hour())         
     column = 'pick_day' if day else 'pick_hour'
@@ -55,8 +55,8 @@ def view_month_week(doh):
 def daily_frame(frm):   # vyvolame s df ako frm
     df_days = df.group_by(pl.col('pick_dt').dt.day().alias('pick_day'), 
                           pl.col('pick_dt').dt.hour().alias('pick_hour'))\
-                         .agg([pl.col('passengers').sum().alias('pass_count'),
-                               pl.col('fare').count().alias('fares_count'),
+                         .agg([pl.col('passengers').sum().alias('Cestujúci'),
+                               pl.col('fare').count().alias('Jazdy'),
                                pl.col('fare').sum().alias('total_fare')])
     return df_days
 
@@ -64,7 +64,7 @@ def daily_frame(frm):   # vyvolame s df ako frm
 def daily_plot(day): # frm tu bude povyssia df_days, day bude z radio day_choose
     frm_d = daily_frame(df)
     frm_day = frm_d.filter(pl.col('pick_day') == day).sort(by='pick_hour')
-    pass_fares_plot = px.bar(frm_day, x='pick_hour', y=['pass_count', 'fares_count'], barmode='group',
+    pass_fares_plot = px.bar(frm_day, x='pick_hour', y=['Cestujúci', 'Jazdy'], barmode='group',
                              labels={'pick_hour': 'Hodina', 'value': 'Hodnoty', 'variable': 'Premenná'})
     pass_fares_plot.update_layout(xaxis=dict(tickmode='array', tickvals=list(range(24))))
     return pass_fares_plot
