@@ -11,14 +11,6 @@ def __():
 
 
 @app.cell
-def __():
-    # zmenme hodnotu x, ba potom zrusme tuto bunku
-    x = 1
-    print(x)
-    return x,
-
-
-@app.cell
 def __(x):
     # vykona sa automaticky, ak sa zmeni predch. bunka
     y = x + 1
